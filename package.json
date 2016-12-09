@@ -1,0 +1,29 @@
+{
+  "name": "steamer-plugin-ak",
+  "version": "0.0.1",
+  "description": "steamer-plugin-ak",
+  "main": "index.js",
+  "scripts": {
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteamerTeam/steamer-plugin-ak.git"
+  },
+  "keywords": [
+    "steamer"
+  ],
+  "author": "SteamerTeam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SteamerTeam/steamer-plugin-ak/issues"
+  },
+  "homepage": "https://github.com/SteamerTeam/steamer-plugin-ak#readme",
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    "gulp": "gulpjs/gulp#4.0",
+    "steamer-cli": "*"
+  }
+}
