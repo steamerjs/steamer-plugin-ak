@@ -14,15 +14,18 @@ npm i -g steamer-plugin-ak
 
 In a project, if the production code folder structure is like this:
 
-- build
-	- cdn
-		- css
-		- img
-		- js
-	- webserver
-		- index.html
-		- detail.html
-		- comment.html
+-- build
+	|
+	-- cdn
+	|	|
+	|	|-- css
+	|	|-- img
+	|	|-- js
+	|
+	-- webserver
+		|-- index.html
+		|-- detail.html
+		|-- comment.html
 
 For initiation:
 
@@ -41,7 +44,7 @@ Your zip file name means the final zip file name you wanna create. Default value
 
 Your source folder, that should be the source production code. For the above example, it should be `build` which is also the default value.
 
-The next two questions will loop until you type empty string because you may have multiple mappings. For example, you will hope to use `huayang.qq.com/h5/` for your html files in `webserver` folder, then use `s1.url.cn/h5/` for your cdn files. 
+The next two questions won't stop until you type empty string because you may have multiple mappings. For example, you will hope to use `huayang.qq.com/h5/` for your html files in `webserver` folder, then use `s1.url.cn/h5/` for your cdn files. 
 
 
 ```javascript
