@@ -14,6 +14,7 @@ npm i -g steamer-plugin-ak
 
 In a project, if the production code folder structure is like this:
 
+```
 -- build
 	|
 	-- cdn
@@ -26,6 +27,7 @@ In a project, if the production code folder structure is like this:
 		|-- index.html
 		|-- detail.html
 		|-- comment.html
+```
 
 For initiation:
 
