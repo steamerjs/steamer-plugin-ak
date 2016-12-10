@@ -81,6 +81,11 @@ AkPlugin.prototype.createConfig = function() {
 AkPlugin.prototype.startZipFile = function() {
 	this.readConfig();
 	this.copyFiles();
+
+	if (this.argv.sameorigin || this.argv.s) {
+		this.replaceUrl();
+	}
+
 	this.zipFiles();
 };
 
@@ -112,6 +117,10 @@ AkPlugin.prototype.copyFiles = function() {
 	});
 };
 
+AkPlugin.prototype.replaceUrl = function() {
+	// TODO: replace js url to ensure same origin
+};
+
 AkPlugin.prototype.zipFiles = function() {
 	let zipPath = path.resolve(this.config.zip + ".zip");
 
@@ -134,8 +143,6 @@ AkPlugin.prototype.zipFiles = function() {
 
 	// pipe archive data to the file
 	archive.pipe(output);
-
-
 
 };
 
