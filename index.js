@@ -17,9 +17,9 @@ String.prototype.replaceAll = function(search, replacement) {
 function AkPlugin(argv) {
 	this.argv = argv;
 	this.config = {
-		zip: "offline",
-		source: "build",
-		map: []
+		zip: "offline",   // zip folder and filename
+		source: "build",  // production code source folder
+		map: []			  // folder and url mapping
 	};
 }
 
@@ -34,6 +34,9 @@ AkPlugin.prototype.init = function() {
 	}
 };
 
+/**
+ * [add zip file name]
+ */
 AkPlugin.prototype.addZipFileName = function() {
 	inquirer.prompt([
 		{
@@ -55,6 +58,9 @@ AkPlugin.prototype.addZipFileName = function() {
 	});
 };
 
+/**
+ * [add mapping config]
+ */
 AkPlugin.prototype.inputConfig = function() {
 	inquirer.prompt([
 		{
@@ -73,23 +79,16 @@ AkPlugin.prototype.inputConfig = function() {
 	    	this.inputConfig();
 	    }
 	    else {
+	    	// not stop until empty input
 	    	console.log("Your config is:\n");
 	    	this.createConfig();
 	    }
 	});
 };
 
-AkPlugin.prototype.startZipFile = function() {
-	this.readConfig();
-	this.copyFiles();
-
-	if (this.argv.sameorigin || this.argv.s) {
-		this.replaceUrl();
-	}
-
-	this.zipFiles();
-};
-
+/**
+ * [create config]
+ */
 AkPlugin.prototype.createConfig = function() {
 	let isJs = true,
 		isForce = true;
@@ -97,11 +96,17 @@ AkPlugin.prototype.createConfig = function() {
 	utils.createConfig("", this.config, isJs, isForce);
 };
 
+/**
+ * [read config]
+ */
 AkPlugin.prototype.readConfig = function() {
 	let isJs = true;
 	this.config = utils.readConfig("", isJs);
 };
 
+/**
+ * [copy files to offline folder]
+ */
 AkPlugin.prototype.copyFiles = function() {
 	
 	fs.removeSync(path.resolve(this.config.zip));
@@ -120,6 +125,9 @@ AkPlugin.prototype.copyFiles = function() {
 	});
 };
 
+/**
+ * [replace cdn url with webserver url]
+ */
 AkPlugin.prototype.replaceUrl = function() {
 	let hasWebserver = false,
 		hasCdn = false,
@@ -160,6 +168,23 @@ AkPlugin.prototype.replaceUrl = function() {
 	}
 };
 
+/**
+ * [start zip file]
+ */
+AkPlugin.prototype.startZipFile = function() {
+	this.readConfig();
+	this.copyFiles();
+
+	if (this.argv.sameorigin || this.argv.s) {
+		this.replaceUrl();
+	}
+
+	this.zipFiles();
+};
+
+/**
+ * [zip files]
+ */
 AkPlugin.prototype.zipFiles = function() {
 	let zipPath = path.resolve(this.config.zip + ".zip");
 
