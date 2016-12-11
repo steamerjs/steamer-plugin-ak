@@ -3,11 +3,19 @@
 const inquirer = require('inquirer'),
 	  path = require('path'),
 	  fs = require('fs-extra'),
-	  archiver = require('archiver');
+	  archiver = require('archiver'),
+	  pluginUtils = require('steamer-pluginutils');
+
+var utils = new pluginUtils();
+utils.pluginName = "steamer-plugin-ak";
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'gi'), replacement);
+};
 
 function AkPlugin(argv) {
 	this.argv = argv;
-	this.configFile = path.join(".steamer/steamer-plugin-ak.js");
 	this.config = {
 		zip: "offline",
 		source: "build",
@@ -66,16 +74,9 @@ AkPlugin.prototype.inputConfig = function() {
 	    }
 	    else {
 	    	console.log("Your config is:\n");
-	    	console.log(this.config);
 	    	this.createConfig();
 	    }
 	});
-};
-
-AkPlugin.prototype.createConfig = function() {
-	let localConfig = JSON.stringify(this.config, null, 4);
-	fs.ensureFileSync(this.configFile);
-	fs.writeFileSync(this.configFile, localConfig, 'utf-8');
 };
 
 AkPlugin.prototype.startZipFile = function() {
@@ -89,27 +90,29 @@ AkPlugin.prototype.startZipFile = function() {
 	this.zipFiles();
 };
 
-AkPlugin.prototype.readConfig = function() {
-	if (!fs.existsSync(this.configFile)) {
-		throw new Error("Config file not exists");
-	}
+AkPlugin.prototype.createConfig = function() {
+	let isJs = true,
+		isForce = true;
 
-	this.config = JSON.parse(fs.readFileSync(this.configFile, "utf-8"));
+	utils.createConfig("", this.config, isJs, isForce);
+};
+
+AkPlugin.prototype.readConfig = function() {
+	let isJs = true;
+	this.config = utils.readConfig("", isJs);
 };
 
 AkPlugin.prototype.copyFiles = function() {
 	
 	fs.removeSync(path.resolve(this.config.zip));
+	fs.removeSync(path.resolve(this.config.zip + ".zip"));
 
 	this.config.map.forEach((item, key) => {
 		let srcPath = path.join(this.config.source, item.src);
-		if (!fs.existsSync(this.configFile)) {
-			throw new Error("Source folder/file" + srcPath + " not exists");
-		}
 
 		let url = item.url.replace("http://", "").replace("https://", "").replace("//", "");
 
-		let destPath = path.join(this.config.zip, url, item.src);
+		let destPath = path.join(this.config.zip, url);
 
 		fs.copySync(srcPath, destPath);
 
@@ -118,7 +121,43 @@ AkPlugin.prototype.copyFiles = function() {
 };
 
 AkPlugin.prototype.replaceUrl = function() {
-	// TODO: replace js url to ensure same origin
+	let hasWebserver = false,
+		hasCdn = false,
+		webserverUrl = null,
+		cdnUrl = null;
+
+	this.config.map.forEach((item, key) => {
+		if (item.src === "webserver") {
+			hasWebserver = true;
+			webserverUrl = item.url;
+		}
+
+		if (item.src === "cdn") {
+			hasCdn = true;
+			cdnUrl = item.url;
+		}
+	});
+
+	if (hasWebserver && hasCdn) {
+
+		function walkAndReplace(config, folder, extname) {
+			let srcPath = path.join(config.zip, folder),
+				files = fs.walkSync(srcPath);
+
+			files = files.filter((item, key) => {
+				return path.extname(item) === "." + extname;
+			});
+
+			files.map((item, key) => {
+				let content = fs.readFileSync(item, "utf-8");
+				content = content.replaceAll(cdnUrl, webserverUrl);
+				fs.writeFileSync(item, content, "utf-8");
+			});
+		}
+
+		walkAndReplace(this.config, cdnUrl.replaceAll("//", ""), "js");
+		walkAndReplace(this.config, webserverUrl.replaceAll("//", ""), "html");
+	}
 };
 
 AkPlugin.prototype.zipFiles = function() {

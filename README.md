@@ -62,19 +62,22 @@ Your destination url(e.g.,huayang.qq.com/h5/):
 Here is an example config file (.steamer/steamer-plugin-ak.js).
 
 ```javascript
-{
-    "zip": "offline",
-    "source": "build",
-    "map": [
-        {
-            "src": "cdn",
-            "url": "s1.url.cn/huayang/"
-        },
-        {
-            "src": "webserver",
-            "url": "huayang.qq.com/huayang/activity/"
-        }
-    ]
+module.exports = {
+    "plugin": "steamer-plugin-ak",
+    "config": {
+        "zip": "offline",
+        "source": "build",
+        "map": [
+            {
+                "src": "webserver",
+                "url": "s1.url.cn/huayang/"
+            },
+            {
+                "src": "cdn",
+                "url": "huayang.qq.com/huayang/activity/"
+            }
+        ]
+    }
 }
 ```
 
@@ -83,10 +86,12 @@ However, sometimes, you may also hope to use more than one cdn urls. For instanc
 Here is another example config.
 
 ```javascript
-{
-    "zip": "offline",
-    "source": "build",
-    "map": [
+module.exports = {
+    "plugin": "steamer-plugin-ak",
+    "config": {
+        "zip": "offline",
+        "source": "build",
+        "map": [
         {
             "src": "cdn/js",
             "url": "s1.url.cn/huayang/"
@@ -108,6 +113,7 @@ Here is another example config.
             "url": "huayang.qq.com/huayang/activity/"
         }
     ]
+    }
 }
 ```
 
@@ -119,4 +125,34 @@ steamer ak -c
 or
 
 steamer ak -compress
+```
+
+For cross origin issue, you may need to replace `cdn` url with `webserver` url. If your build folder contains `cdn` and `webserver` and you set mapping for both folder as follows, this feature can be used.
+
+```javascript
+module.exports = {
+    "plugin": "steamer-plugin-ak",
+    "config": {
+        "zip": "offline",
+        "source": "build",
+        "map": [
+            {
+                "src": "webserver",
+                "url": "s1.url.cn/huayang/"
+            },
+            {
+                "src": "cdn",
+                "url": "huayang.qq.com/huayang/activity/"
+            }
+        ]
+    }
+}
+```
+
+```javascript
+steamer ak -c -s
+
+or 
+
+steamer ak --compress --sameorigin
 ```
