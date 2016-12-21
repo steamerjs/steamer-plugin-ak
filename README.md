@@ -5,7 +5,7 @@ Create zip package for ak platform
 #### Installation
 
 ```javascript
-npm i -g steamer-cli
+npm i -g steamerjs
 
 npm i -g steamer-plugin-ak
 ```

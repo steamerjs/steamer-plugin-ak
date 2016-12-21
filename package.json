@@ -1,6 +1,6 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {},
@@ -26,7 +26,6 @@
     "steamer-pluginutils": "0.0.1"
   },
   "devDependencies": {
-    "gulp": "gulpjs/gulp#4.0",
-    "steamer-cli": "*"
+      "jasmine": "^2.4.0"
   }
 }
