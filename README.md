@@ -133,3 +133,22 @@ steamer ak -compress
 ```
 
 有时候，你想通过离线包收集一些报错的信息，奈何使用了不同的域名，会有跨域的问题，返回的报错总是 `script error`。你可以通过离线包去处理这件事。如果你配置了 `cdn` 和 `webserver` 两种 `src`，并且 `isSameOrigin` 配置为 `true`，那么程序会自动帮你将 `cdn`的 `url` 全部替换成 `webserver` 本身的 `url`。
+
+## 配置
+* `zipFileName`
+    - String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
+* `src`
+    - String, 生成环境的代码源，默认值 `dist`
+* `map` 
+    - Array, detail source folder and url
+* `isSameOrigin`
+    - Boolean, 默认值 `false`
+    - 如果设置为 `true` 会将 `cdn` 的 `url`，全部替换成 `webserver` 的 `url`
+
+## 测试
+```
+npm run test
+```
+
+## 变更
+* v1.1.0 离线包打包及 `webserver` 替换 `cdn` 的 `url`
