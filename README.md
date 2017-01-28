@@ -46,6 +46,8 @@ steamer ak -init
 
 `Your source folder`, 生成环境的代码源，上面的项目结构中是 `dist`，这也是默认值。
 
+`Whether to add webserver url for all resources`，是否将 `webserver` 的 `url` 替换 `cdn` 的 `url`。
+
 后面两个选项会一直循环出现，除非你输入空值，因为项目中可能有多个 `cdn` 对应多个静态资源。例如，你可能会用 `//huayang.qq.com/h5/` 给你的 `html` 文件，而用 `//s1.url.cn/h5/` 给你的其它静态资源。
 
 
