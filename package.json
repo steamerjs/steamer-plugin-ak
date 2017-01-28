@@ -1,9 +1,12 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "0.0.4",
+  "version": "1.1.0",
   "description": "steamer-plugin-ak",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "pretest": "node ./specWebpack/run.js",
+    "test": "jasmine"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SteamerTeam/steamer-plugin-ak.git"
@@ -26,6 +29,8 @@
     "steamer-pluginutils": "0.0.3"
   },
   "devDependencies": {
-      "jasmine": "^2.4.0"
+    "bluebird": "^3.4.7",
+    "jasmine": "^2.4.0",
+    "robotjs": "^0.4.5"
   }
 }

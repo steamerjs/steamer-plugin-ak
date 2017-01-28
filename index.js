@@ -17,9 +17,10 @@ String.prototype.replaceAll = function(search, replacement) {
 function AkPlugin(argv) {
 	this.argv = argv;
 	this.config = {
-		zip: "offline",   // zip folder and filename
-		source: "build",  // production code source folder
-		map: []			  // folder and url mapping
+		zipFileName: "offline",   // zip folder and filename
+		src: "dist",  			  // production code source folder
+		isSameOrigin: false,	  // whether to add webserver url to all resources
+		map: []			  		  // folder and url mapping
 	};
 }
 
@@ -34,35 +35,59 @@ AkPlugin.prototype.init = function() {
 	}
 };
 
+AkPlugin.prototype.getZipFileName = function(answers) {
+    this.config.zipFileName = answers.zipFileName;
+    this.config.src = answers.src;
+    this.config.isSameOrigin = answers.isSameOrigin;
+    this.inputConfig();
+};
+
 /**
  * [add zip file name]
  */
 AkPlugin.prototype.addZipFileName = function() {
-	inquirer.prompt([
+	return inquirer.prompt([
 		{
 			type: "input",
-			name: "zip",
+			name: "zipFileName",
 			default: "offline",
 			message: "Your zip file name(e.g., offline):",
 		}, 
 		{
 			type: "input",
-			name: "source",
-			default: "build",
+			name: "src",
+			default: "dist",
 			message: "Your source folder(e.g., build, pub, dist):",
 		}, 
-	]).then((answers) => {
-	    this.config.zip = answers.zip;
-	    this.config.source = answers.source;
-	    this.inputConfig();
+		{
+			type: "confirm",
+			name: "isSameOrigin",
+			default: false,
+			message: "Whether to add webserver url for all resources",
+		}, 
+	]).then((ansers) => {
+		this.getZipFileName(ansers)
 	});
 };
+
+AkPlugin.prototype.getConfig = function(answers) {
+	if (answers.src && answers.url) {
+    	this.config.map.push(answers);
+    	this.inputConfig();
+    }
+    else {
+    	// not stop until empty input
+    	console.log("\n");
+    	this.createConfig();
+    }
+}
 
 /**
  * [add mapping config]
  */
 AkPlugin.prototype.inputConfig = function() {
-	inquirer.prompt([
+	
+	return inquirer.prompt([
 		{
 			type: "input",
 			name: "src",
@@ -71,18 +96,10 @@ AkPlugin.prototype.inputConfig = function() {
 		{
 			type: "input",
 			name: "url",
-			message: "Your destination url(e.g.,huayang.qq.com/h5/):",
+			message: "Your destination url(e.g.,//huayang.qq.com/h5/):",
 		}
 	]).then((answers) => {
-	    if (answers.src && answers.url) {
-	    	this.config.map.push(answers);
-	    	this.inputConfig();
-	    }
-	    else {
-	    	// not stop until empty input
-	    	console.log("Your config is:\n");
-	    	this.createConfig();
-	    }
+	    this.getConfig(answers);
 	});
 };
 
@@ -109,15 +126,15 @@ AkPlugin.prototype.readConfig = function() {
  */
 AkPlugin.prototype.copyFiles = function() {
 	
-	fs.removeSync(path.resolve(this.config.zip));
-	fs.removeSync(path.resolve(this.config.zip + ".zip"));
+	fs.removeSync(path.resolve(this.config.zipFileName));
+	fs.removeSync(path.resolve(this.config.zipFileName + ".zip"));
 
 	this.config.map.forEach((item, key) => {
-		let srcPath = path.join(this.config.source, item.src);
+		let srcPath = path.join(this.config.src, item.src);
 
-		let url = item.url.replace("http://", "").replace("https://", "").replace("//", "");
+		let url = item.url.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/");
 
-		let destPath = path.join(this.config.zip, url);
+		let destPath = path.join(this.config.zipFileName, url);
 
 		fs.copySync(srcPath, destPath);
 
@@ -149,7 +166,7 @@ AkPlugin.prototype.replaceUrl = function() {
 	if (hasWebserver && hasCdn) {
 
 		function walkAndReplace(config, folder, extname) {
-			let srcPath = path.join(config.zip, folder),
+			let srcPath = path.join(config.zipFileName, folder),
 				files = fs.walkSync(srcPath);
 
 			files = files.filter((item, key) => {
@@ -175,7 +192,7 @@ AkPlugin.prototype.startZipFile = function() {
 	this.readConfig();
 	this.copyFiles();
 
-	if (this.argv.sameorigin || this.argv.s) {
+	if (this.config.isSameOrigin) {
 		this.replaceUrl();
 	}
 
@@ -186,7 +203,7 @@ AkPlugin.prototype.startZipFile = function() {
  * [zip files]
  */
 AkPlugin.prototype.zipFiles = function() {
-	let zipPath = path.resolve(this.config.zip + ".zip");
+	let zipPath = path.resolve(this.config.zipFileName + ".zip");
 
 	var output = fs.createWriteStream(zipPath);
 	var archive = archiver('zip', {
@@ -203,7 +220,7 @@ AkPlugin.prototype.zipFiles = function() {
 	  throw err;
 	});
 
-	archive.directory(this.config.zip);
+	archive.directory(this.config.zipFileName);
 
 	// pipe archive data to the file
 	archive.pipe(output);
