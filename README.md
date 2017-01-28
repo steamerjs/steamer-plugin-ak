@@ -14,7 +14,7 @@ npm i -g steamer-plugin-ak
 
 如果项目的生成环境的代码结构如下：
 
-```
+```javascript
 -- dist
 	|
 	-- cdn
