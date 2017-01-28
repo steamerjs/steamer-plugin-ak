@@ -42,7 +42,7 @@ steamer ak -init
 
 它会弹出下面的一些问题：
 
-`Your zip file name`, 意思是最终生成的离线包名称，默认值是 `offline`。
+`Your zip file name`, 意思是最终生成的离线包名称，默认值是 `offline`，当前文件夹位置以命令执行位置为基准。
 
 `Your source folder`, 生成环境的代码源，上面的项目结构中是 `dist`，这也是默认值。
 
