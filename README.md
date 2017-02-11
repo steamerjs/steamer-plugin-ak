@@ -145,17 +145,6 @@ or
 steamer ak -compress
 ```
 
-## 配置
-* `zipFileName`
-    - String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
-* `src`
-    - String, 生成环境的代码源，默认值 `dist`
-* `map` 
-    - Array, detail source folder and url
-* `isSameOrigin`
-    - Boolean, 默认值 `false`
-    - 如果设置为 `true` 会将 `cdn` 的 `url`，全部替换成 `webserver` 的 `url`
-
 ## 测试
 ```
 npm run test
