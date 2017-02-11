@@ -200,7 +200,7 @@ AkPlugin.prototype.copyFiles = function() {
 		let destPath = path.join(cwd, this.config.zipFileName, url, dest);
 
 		fs.copySync(srcPath, destPath);
-		// utils.info(destPath + " is copied success!");
+		utils.info(destPath + " is copied success!");
 	});
 };
 

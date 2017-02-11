@@ -27,7 +27,7 @@
     "klaw-sync": "^1.0.2",
     "inquirer": "^1.2.3",
     "lodash": "^4.17.2",
-    "steamer-pluginutils": "1.0.5"
+    "steamer-pluginutils": "1.0.6"
   },
   "devDependencies": {
     "bluebird": "^3.4.7",
