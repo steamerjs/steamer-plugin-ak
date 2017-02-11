@@ -1,10 +1,10 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {
-    "pretest": "node ./specWebpack/run.js",
+    "pretest": "node ./specPlugin/run.js",
     "test": "jasmine"
   },
   "repository": {
@@ -23,10 +23,11 @@
   "dependencies": {
     "archiver": "^1.2.0",
     "colors": "^1.1.2",
-    "fs-extra": "^1.0.0",
+    "fs-extra": "^2.0.0",
+    "klaw-sync": "^1.0.2",
     "inquirer": "^1.2.3",
     "lodash": "^4.17.2",
-    "steamer-pluginutils": "0.0.3"
+    "steamer-pluginutils": "1.0.5"
   },
   "devDependencies": {
     "bluebird": "^3.4.7",

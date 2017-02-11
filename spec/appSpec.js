@@ -1,86 +1,108 @@
 "use strict";
 
 const path = require('path'),
-	  fs = require('fs'),
-      AK = require('../index');
+      fs = require('fs');
 
 
-describe("offline", function() {
-  	it("=> sameorigin", function() {
+describe("not-sameorigin", function() {
+    it("=> check offline folder", function() {
 
-        let ak = new AK({
-            init: true
-        });
-
-  		expect(fs.existsSync('specWebpack/sameorigin/dist/offline.zip')).toBe(true);
-  		
-  		var offline = path.resolve('specWebpack/sameorigin/dist/offline'),
-  			domain = fs.readdirSync(offline);
-
-    	expect(domain[0]).toBe('huayang.qq.com');
-        expect(domain[1]).toBe('s1.url.cn');
-
-    	var htmlFolder = path.resolve('specWebpack/sameorigin/dist/offline/huayang.qq.com/h5/'),
-    		htmlFile = fs.readdirSync(htmlFolder);
-
-    	expect(htmlFile[0]).toBe('entry.html');
-
-    	var cdnFolder = path.resolve('specWebpack/sameorigin/dist/offline/s1.url.cn/h5/'),
-    		jsFolder = fs.readdirSync(path.join(cdnFolder, 'js')),
-    		cssFolder = fs.readdirSync(path.join(cdnFolder, 'css'));
-
-    	expect(jsFolder[0]).toBe('index.js');
-    	expect(jsFolder[1]).toBe('libs');
-    	expect(cssFolder[0]).toBe('index.css');
-
-    	var libs = path.resolve('specWebpack/sameorigin/dist/offline/s1.url.cn/h5/js/libs/'),
-    	    libsFolder = fs.readdirSync(libs);
-
-    	expect(libsFolder[0]).toBe('react.js');
-
-        var htmlFileContent1 = fs.readFileSync('specWebpack/sameorigin/dist/offline/huayang.qq.com/h5/entry.html', 'utf-8');
-        var htmlFileContent2 = fs.readFileSync('specWebpack/sameorigin/dist/offline/huayang.qq.com/h5/index.html', 'utf-8');
+        expect(fs.existsSync('specPlugin/not-sameorigin/dist/offline.zip')).toBe(true);
         
-        expect(!!~htmlFileContent1.indexOf('huayang.qq.com')).toBe(true);
-        expect(!!~htmlFileContent2.indexOf('huayang.qq.com')).toBe(true);
+        var offline = path.resolve('specPlugin/not-sameorigin/dist/offline'),
+            offlineFolder = fs.readdirSync(offline);
 
-  	});
+        expect(offlineFolder[0]).toBe('huayang.qq.com');
+        expect(offlineFolder[1]).toBe('s1.url.cn');
 
-    it("=> not sameorigin", function() {
-
-        let ak = new AK({
-            init: true
-        });
-
-        expect(fs.existsSync('specWebpack/not-sameorigin/dist/offline.zip')).toBe(true);
+        var huayang = path.resolve('specPlugin/not-sameorigin/dist/offline/huayang.qq.com'),
+            huayangFolder = fs.readdirSync(huayang);
         
-        var offline = path.resolve('specWebpack/not-sameorigin/dist/offline'),
-            domain = fs.readdirSync(offline);
+        expect(huayangFolder[0]).toBe('h5');
 
-        expect(domain[0]).toBe('huayang.qq.com');
-        expect(domain[1]).toBe('s1.url.cn');
+        var h5 = path.resolve('specPlugin/not-sameorigin/dist/offline/huayang.qq.com/h5'),
+            h5Folder = fs.readdirSync(h5);
 
-        var htmlFolder = path.resolve('specWebpack/not-sameorigin/dist/offline/huayang.qq.com/h5/'),
-            htmlFile = fs.readdirSync(htmlFolder);
+        expect(h5Folder[0]).toBe('entry.html');
+        expect(h5Folder[1]).toBe('index.html');
 
-        expect(htmlFile[0]).toBe('entry.html');
+        var s1 = path.resolve('specPlugin/not-sameorigin/dist/offline/s1.url.cn'),
+            s1Folder = fs.readdirSync(s1);
 
-        var cdnFolder = path.resolve('specWebpack/not-sameorigin/dist/offline/s1.url.cn/h5/'),
-            jsFolder = fs.readdirSync(path.join(cdnFolder, 'js')),
-            cssFolder = fs.readdirSync(path.join(cdnFolder, 'css'));
+        expect(s1Folder[0]).toBe("h5");
+
+        var h5 = path.resolve('specPlugin/not-sameorigin/dist/offline/s1.url.cn/h5'),
+            jsFolder = fs.readdirSync(path.join(h5, 'js')),
+            cssFolder = fs.readdirSync(path.join(h5, 'css'));
 
         expect(jsFolder[0]).toBe('index.js');
         expect(jsFolder[1]).toBe('libs');
         expect(cssFolder[0]).toBe('index.css');
 
-        var libs = path.resolve('specWebpack/not-sameorigin/dist/offline/s1.url.cn/h5/js/libs/'),
+        var libs = path.resolve('specPlugin/not-sameorigin/dist/offline/s1.url.cn/h5/js/libs/'),
+            libsFolder = fs.readdirSync(libs);
+
+        expect(libsFolder[0]).toBe('react.js');
+    });
+});
+
+describe("resource-sameorigin", function() {
+    it("=> check offline folder with same origin js files", function() {
+
+        expect(fs.existsSync('specPlugin/sameorigin/dist/offline.zip')).toBe(true);
+        
+        var offline = path.resolve('specPlugin/sameorigin/dist/offline'),
+            offlineFolder = fs.readdirSync(offline);
+
+        expect(offlineFolder[0]).toBe('huayang.qq.com');
+        expect(offlineFolder[1]).toBe('s1.url.cn');
+
+        var huayang = path.resolve('specPlugin/sameorigin/dist/offline/huayang.qq.com'),
+            huayangFolder = fs.readdirSync(huayang);
+        
+        expect(huayangFolder[0]).toBe('h5');
+
+        var h5 = path.resolve('specPlugin/sameorigin/dist/offline/huayang.qq.com/h5'),
+            h5Folder = fs.readdirSync(h5),
+            jsFolder = fs.readdirSync(path.join(h5, 'js'));
+
+        expect(h5Folder[0]).toBe('entry.html');
+        expect(h5Folder[1]).toBe('index.html');
+        expect(jsFolder[0]).toBe('index.js');
+        expect(jsFolder[1]).toBe('libs');
+
+        var libs = path.resolve('specPlugin/sameorigin/dist/offline/huayang.qq.com/h5/js/libs/'),
             libsFolder = fs.readdirSync(libs);
 
         expect(libsFolder[0]).toBe('react.js');
 
-        var htmlFileContent = fs.readFileSync('specWebpack/not-sameorigin/dist/offline/huayang.qq.com/h5/entry.html', 'utf-8');
-        
-        expect(!!~htmlFileContent.indexOf('s1.url.cn')).toBe(true);
+        var s1 = path.resolve('specPlugin/sameorigin/dist/offline/s1.url.cn'),
+            s1Folder = fs.readdirSync(s1);
+
+        expect(s1Folder[0]).toBe("h5");
+
+        var h5 = path.resolve('specPlugin/sameorigin/dist/offline/s1.url.cn/h5'),
+            cssFolder = fs.readdirSync(path.join(h5, 'css'));
+
+        expect(cssFolder[0]).toBe('index.css');
+
+        var htmlContent = fs.readFileSync(path.resolve('specPlugin/sameorigin/dist/offline/huayang.qq.com/h5/entry.html'), "utf-8");
+
+        var matchCount = 0;
+        htmlContent.replace(new RegExp("(.\\\s*)huayang.qq.com\/h5\/(.*)(.js)", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        expect(matchCount).toBe(2);
+
+        var htmlContent = fs.readFileSync(path.resolve('specPlugin/sameorigin/dist/offline/huayang.qq.com/h5/index.html'), "utf-8");
+
+        var matchCount = 0;
+        htmlContent.replace(new RegExp("(.\\\s*)huayang.qq.com\/h5\/(.*)(.js)", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        expect(matchCount).toBe(2);
 
     });
 });

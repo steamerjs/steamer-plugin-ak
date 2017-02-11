@@ -3,6 +3,7 @@
 const inquirer = require('inquirer'),
 	  path = require('path'),
 	  fs = require('fs-extra'),
+	  klawSync = require('klaw-sync'),
 	  archiver = require('archiver'),
 	  pluginUtils = require('steamer-pluginutils');
 
@@ -14,12 +15,29 @@ String.prototype.replaceAll = function(search, replacement) {
     return target.replace(new RegExp(search, 'gi'), replacement);
 };
 
+String.prototype.replaceJsAll = function(search, replacement) {
+    var target = this,
+    	cdnUrl = search.replace("//", ""),
+    	webserverUrl = replacement.replace("//", "");
+
+    search = search.replace("//", "");
+    if (search[search.length - 1] === "/") {
+    	search = search.substr(0, search.length - 1);
+    	search += "\\\/";
+    }
+
+    return target.replace(new RegExp("(.\\\s*)" + search + "(.*)(.js)", 'gi'), function(match) {
+    	match = match.replace(cdnUrl, webserverUrl);
+    	return match;
+    });
+};
+
+
 function AkPlugin(argv) {
 	this.argv = argv;
 	this.config = {
 		zipFileName: "offline",   // zip folder and filename
 		src: "dist",  			  // production code source folder
-		isSameOrigin: false,	  // whether to add webserver url to all resources
 		map: []			  		  // folder and url mapping
 	};
 }
@@ -38,7 +56,6 @@ AkPlugin.prototype.init = function() {
 AkPlugin.prototype.getZipFileName = function(answers) {
     this.config.zipFileName = answers.zipFileName;
     this.config.src = answers.src;
-    this.config.isSameOrigin = answers.isSameOrigin;
     this.inputConfig();
 };
 
@@ -58,15 +75,9 @@ AkPlugin.prototype.addZipFileName = function() {
 			name: "src",
 			default: "dist",
 			message: "Your source folder(e.g., build, pub, dist):",
-		}, 
-		{
-			type: "confirm",
-			name: "isSameOrigin",
-			default: false,
-			message: "Whether to add webserver url for all resources",
-		}, 
-	]).then((ansers) => {
-		this.getZipFileName(ansers)
+		}
+	]).then((answers) => {
+		this.getZipFileName(answers);
 	});
 };
 
@@ -91,7 +102,13 @@ AkPlugin.prototype.inputConfig = function() {
 		{
 			type: "input",
 			name: "src",
-			message: "Your resource folder(e.g., cdn, cdn/js, cdn/css, webserver):",
+			message: "Your resource folder(e.g., cdn, webserver, cdn/js, cdn/css):",
+		}, 
+		{
+			type: "input",
+			name: "dest",
+			default: "",
+			message: "Your destination folder(e.g., /, /, js, css):",
 		}, 
 		{
 			type: "input",
@@ -122,23 +139,68 @@ AkPlugin.prototype.readConfig = function() {
 };
 
 /**
+ * [start zip file]
+ */
+AkPlugin.prototype.startZipFile = function() {
+	this.readConfig();
+
+	this.addDestUrl();
+
+	this.copyFiles();
+
+	this.replaceUrl();
+
+	this.zipFiles();
+};
+
+/**
+ * [add destUrl property to config map data]
+ */
+AkPlugin.prototype.addDestUrl = function() {
+
+	let hasWebserver = false,
+		webServerConfig = {};
+
+	this.config.map.map((item, key) => {
+
+		if (item.isWebserver) {
+			hasWebserver = true;
+			webServerConfig = item;
+		}
+
+	});
+
+	this.config.map.map((item, key) => {
+
+		item.destUrl = item.url;
+
+		if (hasWebserver && item.isSameOrigin) {
+			item.destUrl = webServerConfig.url || "";
+		}
+	});
+
+};
+
+/**
  * [copy files to offline folder]
  */
 AkPlugin.prototype.copyFiles = function() {
 	
-	fs.removeSync(path.resolve(this.config.zipFileName));
-	fs.removeSync(path.resolve(this.config.zipFileName + ".zip"));
+	let cwd = process.cwd();
+
+	fs.removeSync(path.join(cwd, this.config.zipFileName));
+	fs.removeSync(path.join(cwd, this.config.zipFileName + ".zip"));
 
 	this.config.map.forEach((item, key) => {
 		let srcPath = path.join(this.config.src, item.src);
 
-		let url = item.url.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/");
+		let url = item.destUrl.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/"),
+			dest = item.dest || "";
 
-		let destPath = path.join(this.config.zipFileName, url);
+		let destPath = path.join(cwd, this.config.zipFileName, url, dest);
 
 		fs.copySync(srcPath, destPath);
-
-		console.log(destPath + " is copied success!");
+		// utils.info(destPath + " is copied success!");
 	});
 };
 
@@ -148,17 +210,21 @@ AkPlugin.prototype.copyFiles = function() {
 AkPlugin.prototype.replaceUrl = function() {
 	let hasWebserver = false,
 		hasCdn = false,
+		webserverDestUrl = null,
 		webserverUrl = null,
+		cdnDestUrl = null,
 		cdnUrl = null;
 
 	this.config.map.forEach((item, key) => {
-		if (item.src === "webserver") {
+		if (item.isWebserver) {
 			hasWebserver = true;
+			webserverDestUrl = item.destUrl;
 			webserverUrl = item.url;
 		}
 
-		if (item.src === "cdn") {
+		if (item.isSameOrigin) {
 			hasCdn = true;
+			cdnDestUrl = item.destUrl;
 			cdnUrl = item.url;
 		}
 	});
@@ -166,37 +232,25 @@ AkPlugin.prototype.replaceUrl = function() {
 	if (hasWebserver && hasCdn) {
 
 		function walkAndReplace(config, folder, extname) {
-			let srcPath = path.join(config.zipFileName, folder),
-				files = fs.walkSync(srcPath);
+			let srcPath = path.join(config.zipFileName, folder);
+			srcPath = path.resolve(srcPath.replace(":", "/"));
+
+			let files = klawSync(srcPath);
 
 			files = files.filter((item, key) => {
-				return path.extname(item) === "." + extname;
+				return path.extname(item.path) === "." + extname;
 			});
 
 			files.map((item, key) => {
-				let content = fs.readFileSync(item, "utf-8");
-				content = content.replaceAll(cdnUrl, webserverUrl);
-				fs.writeFileSync(item, content, "utf-8");
+				let content = fs.readFileSync(item.path, "utf-8");
+				content = content.replaceJsAll(cdnUrl, webserverUrl);
+				fs.writeFileSync(item.path, content, "utf-8");
 			});
 		}
-
-		walkAndReplace(this.config, cdnUrl.replaceAll("//", ""), "js");
-		walkAndReplace(this.config, webserverUrl.replaceAll("//", ""), "html");
+		
+		walkAndReplace(this.config, cdnDestUrl.replaceAll("//", ""), "js");
+		walkAndReplace(this.config, webserverDestUrl.replaceAll("//", ""), "html");
 	}
-};
-
-/**
- * [start zip file]
- */
-AkPlugin.prototype.startZipFile = function() {
-	this.readConfig();
-	this.copyFiles();
-
-	if (this.config.isSameOrigin) {
-		this.replaceUrl();
-	}
-
-	this.zipFiles();
 };
 
 /**
@@ -211,13 +265,13 @@ AkPlugin.prototype.zipFiles = function() {
 	});
 
 	output.on('close', function() {
-	  console.log(archive.pointer() + ' total bytes');
-	  console.log('archiver has been finalized and the output file descriptor has closed.');
+		console.log(archive.pointer() + ' total bytes');
+	  	console.log('archiver has been finalized and the output file descriptor has closed.');
 	});
 
 	// good practice to catch this error explicitly
 	archive.on('error', function(err) {
-	  throw err;
+		throw err;
 	});
 
 	archive.directory(this.config.zipFileName);
