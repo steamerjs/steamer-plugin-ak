@@ -147,6 +147,9 @@ steamer ak -compress
 
 ## 测试
 ```
+// 安装eslint工具
+npm i -g eslint
+
 npm run test
 ```
 
