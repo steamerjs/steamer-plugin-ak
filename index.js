@@ -1,35 +1,35 @@
 "use strict";
 
 const inquirer = require('inquirer'),
-	  path = require('path'),
-	  fs = require('fs-extra'),
-	  klawSync = require('klaw-sync'),
-	  archiver = require('archiver'),
-	  pluginUtils = require('steamer-pluginutils');
+	path = require('path'),
+	fs = require('fs-extra'),
+	klawSync = require('klaw-sync'),
+	archiver = require('archiver'),
+	pluginUtils = require('steamer-pluginutils');
 
 var utils = new pluginUtils();
 utils.pluginName = "steamer-plugin-ak";
 
 String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'gi'), replacement);
+	var target = this;
+	return target.replace(new RegExp(search, 'gi'), replacement);
 };
 
 String.prototype.replaceJsAll = function(search, replacement) {
-    var target = this,
+	var target = this,
     	cdnUrl = search.replace("//", ""),
     	webserverUrl = replacement.replace("//", "");
 
-    search = search.replace("//", "");
-    if (search[search.length - 1] === "/") {
+	search = search.replace("//", "");
+	if (search[search.length - 1] === "/") {
     	search = search.substr(0, search.length - 1);
     	search += "\\\/";
-    }
+	}
 
-    return target.replace(new RegExp("(.\\\s*)" + search + "(.*)(.js)", 'gi'), function(match) {
+	return target.replace(new RegExp("(.\\\s*)" + search + "(.*)(.js)", 'gi'), function(match) {
     	match = match.replace(cdnUrl, webserverUrl);
     	return match;
-    });
+	});
 };
 
 
@@ -54,9 +54,9 @@ AkPlugin.prototype.init = function() {
 };
 
 AkPlugin.prototype.getZipFileName = function(answers) {
-    this.config.zipFileName = answers.zipFileName;
-    this.config.src = answers.src;
-    this.inputConfig();
+	this.config.zipFileName = answers.zipFileName;
+	this.config.src = answers.src;
+	this.inputConfig();
 };
 
 /**
@@ -85,13 +85,13 @@ AkPlugin.prototype.getConfig = function(answers) {
 	if (answers.src && answers.url) {
     	this.config.map.push(answers);
     	this.inputConfig();
-    }
-    else {
+	}
+	else {
     	// not stop until empty input
     	console.log("\n");
     	this.createConfig();
-    }
-}
+	}
+};
 
 /**
  * [add mapping config]
@@ -161,7 +161,7 @@ AkPlugin.prototype.addDestUrl = function() {
 	let hasWebserver = false,
 		webServerConfig = {};
 
-	this.config.map.map((item, key) => {
+	this.config.map.map((item) => {
 
 		if (item.isWebserver) {
 			hasWebserver = true;
@@ -170,7 +170,7 @@ AkPlugin.prototype.addDestUrl = function() {
 
 	});
 
-	this.config.map.map((item, key) => {
+	this.config.map.map((item) => {
 
 		item.destUrl = item.url;
 
@@ -191,7 +191,7 @@ AkPlugin.prototype.copyFiles = function() {
 	fs.removeSync(path.join(cwd, this.config.zipFileName));
 	fs.removeSync(path.join(cwd, this.config.zipFileName + ".zip"));
 
-	this.config.map.forEach((item, key) => {
+	this.config.map.forEach((item) => {
 		let srcPath = path.join(this.config.src, item.src);
 
 		let url = item.destUrl.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/"),
@@ -220,7 +220,7 @@ AkPlugin.prototype.replaceUrl = function() {
 		cdnDestUrl = null,
 		cdnUrl = null;
 
-	this.config.map.forEach((item, key) => {
+	this.config.map.forEach((item) => {
 		if (item.isWebserver) {
 			hasWebserver = true;
 			webserverDestUrl = item.destUrl;
@@ -243,11 +243,11 @@ AkPlugin.prototype.replaceUrl = function() {
 
 				let files = klawSync(srcPath);
 
-				files = files.filter((item, key) => {
+				files = files.filter((item) => {
 					return path.extname(item.path) === "." + extname;
 				});
 
-				files.map((item, key) => {
+				files.map((item) => {
 					let content = fs.readFileSync(item.path, "utf-8");
 					content = content.replaceJsAll(cdnUrl, webserverUrl);
 					fs.writeFileSync(item.path, content, "utf-8");

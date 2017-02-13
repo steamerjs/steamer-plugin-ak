@@ -4,8 +4,9 @@
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js",
     "pretest": "node ./specPlugin/run.js",
-    "test": "jasmine"
+    "test": "npm run lint&&jasmine"
   },
   "repository": {
     "type": "git",
