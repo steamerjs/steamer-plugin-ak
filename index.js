@@ -199,8 +199,13 @@ AkPlugin.prototype.copyFiles = function() {
 
 		let destPath = path.join(cwd, this.config.zipFileName, url, dest);
 
-		fs.copySync(srcPath, destPath);
-		utils.info(destPath + " is copied success!");
+		try {
+			fs.copySync(srcPath, destPath);
+			utils.info(destPath + " is copied success!");
+		}
+		catch(e) {
+			utils.error(e.stack);
+		}
 	});
 };
 
@@ -232,20 +237,25 @@ AkPlugin.prototype.replaceUrl = function() {
 	if (hasWebserver && hasCdn) {
 
 		function walkAndReplace(config, folder, extname) {
-			let srcPath = path.join(config.zipFileName, folder);
-			srcPath = path.resolve(srcPath.replace(":", "/"));
+			try {
+				let srcPath = path.join(config.zipFileName, folder);
+				srcPath = path.resolve(srcPath.replace(":", "/"));
 
-			let files = klawSync(srcPath);
+				let files = klawSync(srcPath);
 
-			files = files.filter((item, key) => {
-				return path.extname(item.path) === "." + extname;
-			});
+				files = files.filter((item, key) => {
+					return path.extname(item.path) === "." + extname;
+				});
 
-			files.map((item, key) => {
-				let content = fs.readFileSync(item.path, "utf-8");
-				content = content.replaceJsAll(cdnUrl, webserverUrl);
-				fs.writeFileSync(item.path, content, "utf-8");
-			});
+				files.map((item, key) => {
+					let content = fs.readFileSync(item.path, "utf-8");
+					content = content.replaceJsAll(cdnUrl, webserverUrl);
+					fs.writeFileSync(item.path, content, "utf-8");
+				});
+			}
+			catch(e) {
+				utils.error(e.stack);
+			}
 		}
 		
 		walkAndReplace(this.config, cdnDestUrl.replaceAll("//", ""), "js");
@@ -265,13 +275,13 @@ AkPlugin.prototype.zipFiles = function() {
 	});
 
 	output.on('close', function() {
-		console.log(archive.pointer() + ' total bytes');
-	  	console.log('archiver has been finalized and the output file descriptor has closed.');
+		utils.info(archive.pointer() + ' total bytes');
+	  	utils.info('archiver has been finalized and the output file descriptor has closed.');
 	});
 
 	// good practice to catch this error explicitly
 	archive.on('error', function(err) {
-		throw err;
+		utils.error(err);
 	});
 
 	archive.directory(this.config.zipFileName);
