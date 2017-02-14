@@ -267,6 +267,7 @@ AkPlugin.prototype.replaceUrl = function() {
  * [zip files]
  */
 AkPlugin.prototype.zipFiles = function() {
+	
 	let zipPath = path.resolve(this.config.zipFileName + ".zip");
 
 	var output = fs.createWriteStream(zipPath);
@@ -274,20 +275,29 @@ AkPlugin.prototype.zipFiles = function() {
 	    store: true // Sets the compression method to STORE.
 	});
 
-	output.on('close', function() {
-		utils.info(archive.pointer() + ' total bytes');
-	  	utils.info('archiver has been finalized and the output file descriptor has closed.');
+	output.on('close', () => {
+	  utils.info(archive.pointer() + ' total bytes');
+	  utils.info('archiver has been finalized and the output file descriptor has closed.');
 	});
 
 	// good practice to catch this error explicitly
-	archive.on('error', function(err) {
-		utils.error(err);
+	archive.on('error', (err) => {
+		utils.error('error');
+		throw err;
 	});
 
-	archive.directory(this.config.zipFileName);
+	let zipFiles = klawSync(path.resolve(this.config.zipFileName), {nodir: true});
+
+	// archive.directory('offline/');
+	
+	zipFiles.forEach((item) => {
+		archive.file(item.path, { name: path.relative(this.config.zipFileName, item.path) });
+	});
 
 	// pipe archive data to the file
 	archive.pipe(output);
+
+	archive.finalize();
 
 };
 

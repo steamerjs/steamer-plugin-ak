@@ -1,11 +1,12 @@
 "use strict";
 
 const path = require('path'),
-      fs = require('fs');
+      fs = require('fs'),
+      decompress = require('decompress');
 
 
 describe("not-sameorigin", function() {
-    it("=> check offline folder", function() {
+    it("=> check offline folder", function(cb) {
 
         expect(fs.existsSync('specPlugin/not-sameorigin/dist/offline.zip')).toBe(true);
         
@@ -43,11 +44,26 @@ describe("not-sameorigin", function() {
             libsFolder = fs.readdirSync(libs);
 
         expect(libsFolder[0]).toBe('react.js');
+
+        decompress(path.resolve('specPlugin/not-sameorigin/dist/offline.zip'), path.resolve('specPlugin/not-sameorigin/dist/unzip')).then(files => {
+            let filesArr = [];
+
+            files.map((item) => {
+                filesArr.push(item.path);
+            });
+
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/entry.html')).toBe(true);
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/index.html')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/css/index.css')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/js/index.js')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/js/libs/react.js')).toBe(true);
+            cb();
+        });
     });
 });
 
 describe("resource-sameorigin", function() {
-    it("=> check offline folder with same origin js files", function() {
+    it("=> check offline folder with same origin js files", function(cb) {
 
         expect(fs.existsSync('specPlugin/sameorigin/dist/offline.zip')).toBe(true);
         
@@ -103,6 +119,22 @@ describe("resource-sameorigin", function() {
         });
 
         expect(matchCount).toBe(2);
+
+        decompress(path.resolve('specPlugin/sameorigin/dist/offline.zip'), path.resolve('specPlugin/sameorigin/dist/unzip')).then(files => {
+            let filesArr = [];
+
+            files.map((item) => {
+                filesArr.push(item.path);
+            });
+            
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/entry.html')).toBe(true);
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/index.html')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/css/index.css')).toBe(true);
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/index.js')).toBe(true);
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/libs/react.js')).toBe(true);
+
+            cb();
+        });
 
     });
 });

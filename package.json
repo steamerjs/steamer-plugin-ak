@@ -1,12 +1,12 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js",
     "pretest": "node ./specPlugin/run.js",
-    "test": "npm run lint&&jasmine"
+    "test": "npm run lint && jasmine"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "bluebird": "^3.4.7",
+    "decompress": "^4.0.0",
     "jasmine": "^2.4.0",
     "robotjs": "^0.4.5"
   }
