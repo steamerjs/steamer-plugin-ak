@@ -21,6 +21,18 @@ new Promise((resolve, reject) => {
 
 	ak.init();
 
+	// change directory
+	process.chdir('../not-sameorigin1');
+
+	fs.removeSync(path.resolve('./dist/offline'));
+	fs.removeSync(path.resolve('./dist/offline.zip'));
+
+	var ak = new AK({
+	    compress: true
+	});
+
+	ak.init();
+
 	resolve();
 
 }).then(() => {

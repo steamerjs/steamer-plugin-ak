@@ -135,6 +135,32 @@ module.exports = {
 
 之所以要用 `isSameOrigin` 与 `isWebserver`，是有时候需要 `html` 文件和 `js` 文件的域名一致，例如有时候需要收集js的报错，让两者的 `cdn` 一致会更方便收集到具体的报错信息。
 
+如果你想部份文件走离线包，部份走线上，你在生成离线包的时候，可以 `exclude` 部份文件。 `exclude` 参数，主要是 `Globs` 的写法，可以参考 [minimatch](https://github.com/isaacs/minimatch) 的配置。示例配置如下：
+
+```javascript
+plugins: [
+    new AkWebpackPlugin({
+        "zipFileName": "dist/offline", 
+        // String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
+        "src": "dist",
+        // String, 生成环境的代码源，默认值 `dist`
+        "map": [
+            {
+                "src": "webserver",
+                "url": "//localhost:9000/"
+            },
+            {
+                "src": "cdn",
+                "url": "//localhost:8000/",
+                "exclude": ['*.png', '*ell.jpg'],
+            }
+        ]
+        // 具体的文件目录及cdn映射
+    })
+]
+
+```
+
 下面的命令，会进行压缩，并生成 `offline` 文件夹，还有 `offline.zip` 文件。
 
 ```javascript
@@ -146,7 +172,8 @@ steamer ak -compress
 ```
 
 ## 测试
-```
+
+```javascript
 // 安装eslint工具
 npm i -g eslint
 
@@ -158,3 +185,4 @@ npm run test
 * v1.2.0 配置更改并修复同域js文件位置错误问题
 * v1.2.1 添加报错提示
 * v1.2.2 修复压缩包报错
+* v1.2.3 支持部份文件走离线包，部份走线上

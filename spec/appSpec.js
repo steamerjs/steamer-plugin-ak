@@ -62,6 +62,66 @@ describe("not-sameorigin", function() {
     });
 });
 
+describe("not-sameorigin1", function() {
+    it("=> check offline folder", function(cb) {
+
+        expect(fs.existsSync('specPlugin/not-sameorigin1/dist/offline.zip')).toBe(true);
+        
+        var offline = path.resolve('specPlugin/not-sameorigin1/dist/offline'),
+            offlineFolder = fs.readdirSync(offline);
+
+        expect(offlineFolder[0]).toBe('huayang.qq.com');
+        expect(offlineFolder[1]).toBe('s1.url.cn');
+
+        var huayang = path.resolve('specPlugin/not-sameorigin1/dist/offline/huayang.qq.com'),
+            huayangFolder = fs.readdirSync(huayang);
+        
+        expect(huayangFolder[0]).toBe('h5');
+
+        var h5 = path.resolve('specPlugin/not-sameorigin1/dist/offline/huayang.qq.com/h5'),
+            h5Folder = fs.readdirSync(h5);
+
+        expect(h5Folder[0]).toBe('entry.html');
+        expect(h5Folder[1]).toBe('index.html');
+
+        var s1 = path.resolve('specPlugin/not-sameorigin1/dist/offline/s1.url.cn'),
+            s1Folder = fs.readdirSync(s1);
+
+        expect(s1Folder[0]).toBe("h5");
+
+        var h5 = path.resolve('specPlugin/not-sameorigin1/dist/offline/s1.url.cn/h5'),
+            jsFolder = fs.readdirSync(path.join(h5, 'js')),
+            cssFolder = fs.readdirSync(path.join(h5, 'css'));
+
+        expect(jsFolder[0]).toBe('index.js');
+        expect(jsFolder[1]).toBe('libs');
+        expect(cssFolder[0]).toBe('index.css');
+
+        var libs = path.resolve('specPlugin/not-sameorigin1/dist/offline/s1.url.cn/h5/js/libs/'),
+            libsFolder = fs.readdirSync(libs);
+
+        expect(libsFolder[0]).toBe('react.js');
+
+        decompress(path.resolve('specPlugin/not-sameorigin1/dist/offline.zip'), path.resolve('specPlugin/not-sameorigin1/dist/unzip')).then(files => {
+            let filesArr = [];
+
+            files.map((item) => {
+                filesArr.push(item.path);
+            });
+
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/entry.html')).toBe(true);
+            expect(!!~filesArr.indexOf('huayang.qq.com/h5/index.html')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/css/index.css')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/js/index.js')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/js/libs/react.js')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/img/adidas.jpg')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/img/google.jpg')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/img/ibm.jpg')).toBe(true);
+            cb();
+        });
+    });
+});
+
 describe("resource-sameorigin", function() {
     it("=> check offline folder with same origin js files", function(cb) {
 
@@ -132,6 +192,7 @@ describe("resource-sameorigin", function() {
             expect(!!~filesArr.indexOf('s1.url.cn/h5/css/index.css')).toBe(true);
             expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/index.js')).toBe(true);
             expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/libs/react.js')).toBe(true);
+            expect(!!~filesArr.indexOf('s1.url.cn/h5/img')).toBe(false);
 
             cb();
         });

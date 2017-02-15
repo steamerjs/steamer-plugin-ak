@@ -19,6 +19,12 @@ module.exports = {
                 "src": "cdn/css",
                 "dest": "css",
                 "url": "//s1.url.cn/h5/",
+            },
+            {
+                "src": "cdn/img",
+                "dest": "img",
+                "url": "//s1.url.cn/h5/",
+                "exclude": ["img"]
             }
         ]
     }

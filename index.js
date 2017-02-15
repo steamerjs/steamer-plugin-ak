@@ -5,9 +5,11 @@ const inquirer = require('inquirer'),
 	fs = require('fs-extra'),
 	klawSync = require('klaw-sync'),
 	archiver = require('archiver'),
+	minimatch = require('minimatch'),
 	pluginUtils = require('steamer-pluginutils');
 
 var utils = new pluginUtils();
+utils.cacheMode = false;
 utils.pluginName = "steamer-plugin-ak";
 
 String.prototype.replaceAll = function(search, replacement) {
@@ -148,6 +150,8 @@ AkPlugin.prototype.startZipFile = function() {
 
 	this.copyFiles();
 
+	this.excludeFiles();
+
 	this.replaceUrl();
 
 	this.zipFiles();
@@ -197,15 +201,56 @@ AkPlugin.prototype.copyFiles = function() {
 		let url = item.destUrl.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/"),
 			dest = item.dest || "";
 
-		let destPath = path.join(cwd, this.config.zipFileName, url, dest);
+		let destPath = path.resolve(cwd, this.config.zipFileName, url, dest);
 
 		try {
 			fs.copySync(srcPath, destPath);
-			utils.info(destPath + " is copied success!");
+			// utils.info(destPath + " is copied success!");
 		}
 		catch(e) {
 			utils.error(e.stack);
 		}
+	});
+};
+
+/**
+ * [remove exclude folder or files]
+ */
+AkPlugin.prototype.excludeFiles = function() {
+
+	let cwd = process.cwd(),
+		excludeFilesArr = [];
+
+	this.config.map.forEach((item, key) => {
+
+		let url = item.destUrl.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/"),
+			dest = item.dest || "";
+
+		let destPath = path.resolve(cwd, this.config.zipFileName, url, dest);
+
+		if (!item.exclude || !item.exclude.length) {
+			return;
+		}
+
+		// include folder itself
+		let walkFiles = klawSync(destPath);
+		walkFiles.unshift({path: destPath});
+
+		walkFiles.forEach((file) => {
+
+			// loop through exclude files patterns
+			item.exclude.forEach((match) => {
+				if (minimatch(file.path, match, {
+					matchBase: true,
+					dot: true
+				})) {
+					if (fs.existsSync(file.path)) {
+						fs.removeSync(file.path);
+					}
+				}
+			});
+			
+		});
 	});
 };
 
@@ -276,8 +321,7 @@ AkPlugin.prototype.zipFiles = function() {
 	});
 
 	output.on('close', () => {
-	  utils.info(archive.pointer() + ' total bytes');
-	  utils.info('archiver has been finalized and the output file descriptor has closed.');
+	  utils.info('\nZip file total size: ' + Math.floor(archive.pointer() / 1024) + 'KB\n');
 	});
 
 	// good practice to catch this error explicitly
