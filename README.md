@@ -138,26 +138,26 @@ module.exports = {
 如果你想部份文件走离线包，部份走线上，你在生成离线包的时候，可以 `exclude` 部份文件。 `exclude` 参数，主要是 `Globs` 的写法，可以参考 [minimatch](https://github.com/isaacs/minimatch) 的配置。示例配置如下：
 
 ```javascript
-plugins: [
-    new AkWebpackPlugin({
-        "zipFileName": "dist/offline", 
-        // String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
+module.exports = {
+    "plugin": "steamer-plugin-ak",
+    "config": {
+        "zipFileName": "dist/offline",
         "src": "dist",
-        // String, 生成环境的代码源，默认值 `dist`
         "map": [
             {
                 "src": "webserver",
-                "url": "//localhost:9000/"
+                "dest": "",
+                "url": "//huayang.qq.com/h5/"
             },
             {
                 "src": "cdn",
-                "url": "//localhost:8000/",
+                "dest": "",
+                "url": "//s1.url.cn/h5/",
                 "exclude": ['*.png', '*ell.jpg'],
             }
         ]
-        // 具体的文件目录及cdn映射
-    })
-]
+    }
+}
 
 ```
 
