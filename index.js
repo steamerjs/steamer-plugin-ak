@@ -218,10 +218,9 @@ AkPlugin.prototype.copyFiles = function() {
  */
 AkPlugin.prototype.excludeFiles = function() {
 
-	let cwd = process.cwd(),
-		excludeFilesArr = [];
+	let cwd = process.cwd();
 
-	this.config.map.forEach((item, key) => {
+	this.config.map.forEach((item) => {
 
 		let url = item.destUrl.replace("http://", "").replace("https://", "").replace("//", "").replace(":", "/"),
 			dest = item.dest || "";
