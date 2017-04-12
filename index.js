@@ -8,16 +8,12 @@ const inquirer = require('inquirer'),
 	minimatch = require('minimatch'),
 	pluginUtils = require('steamer-pluginutils');
 
-var utils = new pluginUtils();
-utils.cacheMode = false;
-utils.pluginName = "steamer-plugin-ak";
-
 String.prototype.replaceAll = function(search, replacement) {
 	var target = this;
 	return target.replace(new RegExp(search, 'gi'), replacement);
 };
 
-String.prototype.replaceJsAll = function(search, replacement) {
+String.prototype.replaceJsAll = function(search, replacement, extension) {
 	var target = this,
     	cdnUrl = search.replace("//", ""),
     	webserverUrl = replacement.replace("//", "");
@@ -25,18 +21,31 @@ String.prototype.replaceJsAll = function(search, replacement) {
 	search = search.replace("//", "");
 	if (search[search.length - 1] === "/") {
     	search = search.substr(0, search.length - 1);
-    	search += "\\\/";
+    	// search += "\\\/";
 	}
 
-	return target.replace(new RegExp("(.\\\s*)" + search + "(.*)(.js)", 'gi'), function(match) {
-    	match = match.replace(cdnUrl, webserverUrl);
-    	return match;
-	});
+	if (extension === 'html') {
+	    target = target.replace(new RegExp("(<script[^>]*src=([\'\"]*)(.*?)([\'\"]*).*?\>(<\/script>)?)", 'gi'), function(match) {
+	    	if (!!~match.indexOf(cdnUrl)) {
+	    		match = match.replace(cdnUrl, webserverUrl);
+	    	}
+	    	return match;
+	    });
+	}
+	else if (extension === 'js') {
+	    target = target.replace(new RegExp(search + "(\\\/(\\w){0,})+(.js)", 'gi'), function(match) {
+	    	match = match.replace(cdnUrl, webserverUrl);
+	    	return match;
+	    });
+	}
+
+    return target;
 };
 
 
 function AkPlugin(argv) {
 	this.argv = argv;
+	this.utils = new pluginUtils("steamer-plugin-ak");
 	this.config = {
 		zipFileName: "offline",   // zip folder and filename
 		src: "dist",  			  // production code source folder
@@ -126,18 +135,17 @@ AkPlugin.prototype.inputConfig = function() {
  * [create config]
  */
 AkPlugin.prototype.createConfig = function() {
-	let isJs = true,
-		isForce = true;
 
-	utils.createConfig("", this.config, isJs, isForce);
+	this.utils.createConfig(this.config, {
+		overwrite: true
+	});
 };
 
 /**
  * [read config]
  */
 AkPlugin.prototype.readConfig = function() {
-	let isJs = true;
-	this.config = utils.readConfig("", isJs);
+	this.config = this.utils.readConfig();
 };
 
 /**
@@ -208,7 +216,7 @@ AkPlugin.prototype.copyFiles = function() {
 			// utils.info(destPath + " is copied success!");
 		}
 		catch(e) {
-			utils.error(e.stack);
+			this.utils.error(e.stack);
 		}
 	});
 };
@@ -293,12 +301,12 @@ AkPlugin.prototype.replaceUrl = function() {
 
 				files.map((item) => {
 					let content = fs.readFileSync(item.path, "utf-8");
-					content = content.replaceJsAll(cdnUrl, webserverUrl);
+					content = content.replaceJsAll(cdnUrl, webserverUrl, extname);
 					fs.writeFileSync(item.path, content, "utf-8");
 				});
 			}
 			catch(e) {
-				utils.error(e.stack);
+				this.utils.error(e.stack);
 			}
 		}
 		
@@ -320,12 +328,12 @@ AkPlugin.prototype.zipFiles = function() {
 	});
 
 	output.on('close', () => {
-	  utils.info('\nZip file total size: ' + Math.floor(archive.pointer() / 1024) + 'KB\n');
+		this.utils.info('\nZip file total size: ' + Math.floor(archive.pointer() / 1024) + 'KB\n');
 	});
 
 	// good practice to catch this error explicitly
 	archive.on('error', (err) => {
-		utils.error('error');
+		this.utils.error('error');
 		throw err;
 	});
 
