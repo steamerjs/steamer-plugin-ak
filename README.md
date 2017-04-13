@@ -140,7 +140,7 @@ module.exports = {
 
 之所以要用 `isSameOrigin` 与 `isWebserver`，是有时候需要 `html` 文件和 `js` 文件的域名一致，例如有时候需要收集js的报错，让两者的 `cdn` 一致会更方便收集到具体的报错信息。
 
-如果你想部份文件走离线包，部份走线上，你在生成离线包的时候，可以 `exclude` 部份文件。 `exclude` 参数，主要是 `Globs` 的写法，可以参考 [minimatch](https://github.com/isaacs/minimatch) 的配置。示例配置如下：
+如果你想部份文件走离线包，部份走线上，你在生成离线包的时候，可以 `exclude` 部份文件。 `exclude` 参数，主要是 `Globs` 的写法，可以参考 [minimatch](https://github.com/isaacs/minimatch) 的配置。示例配置如下。对于一些比较长的路径，如 `/a/b/c/d/1.png`，可以尝试如 `**/c/d/*.png` 类似的匹配。
 
 ```javascript
 module.exports = {
