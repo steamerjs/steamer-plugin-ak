@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "//localhost:8000/";
+/******/ 	__webpack_require__.p = "//s1.url.cn/h5/";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -56,6 +56,10 @@
 	__webpack_require__(3);
 
 	var a = "hello world!";
+
+	var b = "//s1.url.cn/h5/js/a.js";
+
+	var b = "//s1.url.cn/h5/img/a.png";
 
 /***/ },
 /* 2 */,

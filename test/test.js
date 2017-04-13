@@ -275,20 +275,36 @@ describe("resource-sameorigin", function(done) {
         var htmlContent = fs.readFileSync(path.join(PROJECT, '/sameorigin/dist/offline/huayang.qq.com/h5/entry.html'), "utf-8");
 
         var matchCount = 0;
-        htmlContent.replace(new RegExp("(.\\\s*)huayang.qq.com\/h5\/(.*)(.js)", 'gi'), function(match) {
+        htmlContent.replace(new RegExp("(<script[^>]*src=([\'\"]*)(.*?)([\'\"]*).*?\>(<\/script>)?)", 'gi'), function(match) {
+            if (!!~match.indexOf('huayang.qq.com/h5')) {
+                matchCount++;
+            }
+        });
+
+        expect(matchCount).to.be(2);
+
+
+        matchCount = 0;
+        var jsContent = fs.readFileSync(path.join(PROJECT, '/sameorigin/dist/offline/huayang.qq.com/h5/js/index.js'), "utf-8");
+        
+        jsContent.replace(new RegExp("huayang.qq.com\/h5(\\\/(\\w){0,})+(.js)", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        jsContent.replace(new RegExp("[\"|']\/\/huayang.qq.com\/h5\/[\"|']", 'gi'), function(match) {
             matchCount++;
         });
 
         expect(matchCount).to.be(2);
 
-        var htmlContent = fs.readFileSync(path.join(PROJECT, '/sameorigin/dist/offline/huayang.qq.com/h5/index.html'), "utf-8");
+        matchCount = 0;
+        var jsContent = fs.readFileSync(path.join(PROJECT, '/sameorigin/dist/offline/huayang.qq.com/h5/js/libs/react.js'), "utf-8");
 
-        var matchCount = 0;
-        htmlContent.replace(new RegExp("(.\\\s*)huayang.qq.com\/h5\/(.*)(.js)", 'gi'), function(match) {
+        jsContent.replace(new RegExp("[\"|']\/\/huayang.qq.com\/h5\/[\"|']", 'gi'), function(match) {
             matchCount++;
         });
 
-        expect(matchCount).to.be(2);
+        expect(matchCount).to.be(1);
 
         setTimeout(() => {
             decompress(path.join(PROJECT, '/sameorigin/dist/offline.zip'), path.join(PROJECT, '/sameorigin/dist/unzip')).then(files => {
@@ -305,6 +321,126 @@ describe("resource-sameorigin", function(done) {
                 expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/libs/react.js')).to.be(true);
                 expect(!!~filesArr.indexOf('s1.url.cn/h5/img')).to.be(false);
 
+                done();
+            });
+        }, 2000);
+
+    });
+});
+
+describe("resource-sameorigin-uglify", function(done) {
+
+    before(function() {
+
+        process.chdir(path.join(PROJECT, '/sameorigin-uglify'));
+
+        // fs.removeSync(path.join(PROJECT, '/sameorigin/dist/unzip'));
+        fs.removeSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline'));
+        fs.removeSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline.zip'));
+
+        this.timeout(10000);
+
+        var ak = new plugin({
+            compress: true
+        });
+
+        ak.init();
+
+    });
+
+    it("=> check offline folder with same origin js files", function(done) {
+
+        this.timeout(10000);
+
+        expect(fs.existsSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline.zip'))).to.be(true);
+        
+        var offline = path.join(PROJECT, '/sameorigin-uglify/dist/offline'),
+            offlineFolder = fs.readdirSync(offline);
+
+        expect(offlineFolder[0]).to.be('huayang.qq.com');
+        expect(offlineFolder[1]).to.be('s1.url.cn');
+
+        var huayang = path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com'),
+            huayangFolder = fs.readdirSync(huayang);
+        
+        expect(huayangFolder[0]).to.be('h5');
+
+        var h5 = path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com/h5'),
+            h5Folder = fs.readdirSync(h5),
+            jsFolder = fs.readdirSync(path.join(h5, 'js'));
+
+        expect(h5Folder[0]).to.be('entry.html');
+        expect(h5Folder[1]).to.be('js');
+        expect(jsFolder[0]).to.be('index.js');
+        expect(jsFolder[1]).to.be('libs');
+
+        var libs = path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com/h5/js/libs/'),
+            libsFolder = fs.readdirSync(libs);
+
+        expect(libsFolder[0]).to.be('react.js');
+
+        var s1 = path.join(PROJECT, '/sameorigin-uglify/dist/offline/s1.url.cn'),
+            s1Folder = fs.readdirSync(s1);
+
+        expect(s1Folder[0]).to.be("h5");
+
+        var h5 = path.join(PROJECT, '/sameorigin-uglify/dist/offline/s1.url.cn/h5'),
+            cssFolder = fs.readdirSync(path.join(h5, 'css'));
+
+        expect(cssFolder[0]).to.be('index.css');
+
+        var htmlContent = fs.readFileSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com/h5/entry.html'), "utf-8");
+
+        var matchCount = 0;
+
+        htmlContent.replace(new RegExp("(<script[^>]*src=([\'\"]*)(.*?)([\'\"]*).*?\>(<\/script>)?)", 'gi'), function(match) {
+            if (!!~match.indexOf('huayang.qq.com/h5')) {
+                matchCount++;
+            }
+        });
+
+        expect(matchCount).to.be(2);
+
+
+        matchCount = 0;
+        var jsContent = fs.readFileSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com/h5/js/index.js'), "utf-8");
+        
+        jsContent.replace(new RegExp("huayang.qq.com\/h5(\\\/(\\w){0,})+(.js)", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        jsContent.replace(new RegExp("[\"|']\/\/huayang.qq.com\/h5\/[\"|']", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        expect(matchCount).to.be(2);
+
+        matchCount = 0;
+        var jsContent = fs.readFileSync(path.join(PROJECT, '/sameorigin-uglify/dist/offline/huayang.qq.com/h5/js/libs/react.js'), "utf-8");
+
+        jsContent.replace(new RegExp("[\"|']\/\/huayang.qq.com\/h5\/[\"|']", 'gi'), function(match) {
+            matchCount++;
+        });
+
+        expect(matchCount).to.be(1);
+
+        setTimeout(() => {
+            decompress(path.join(PROJECT, '/sameorigin-uglify/dist/offline.zip'), path.join(PROJECT, '/sameorigin-uglify/dist/unzip')).then(files => {
+                let filesArr = [];
+
+                files.map((item) => {
+                    filesArr.push(item.path);
+                });
+                
+                expect(!!~filesArr.indexOf('huayang.qq.com/h5/entry.html')).to.be(true);
+                expect(!!~filesArr.indexOf('s1.url.cn/h5/css/index.css')).to.be(true);
+                expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/index.js')).to.be(true);
+                expect(!!~filesArr.indexOf('huayang.qq.com/h5/js/libs/react.js')).to.be(true);
+                expect(!!~filesArr.indexOf('s1.url.cn/h5/img')).to.be(false);
+
+                done();
+            }).catch((e) => {
+                console.log(e);
                 done();
             });
         }, 2000);

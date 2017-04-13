@@ -2,6 +2,11 @@
 
 AlloyKit平台生成离线包命令
 
+[![NPM Version](https://img.shields.io/npm/v/steamer-plugin-ak.svg?style=flat)](https://www.npmjs.com/package/steamer-plugin-ak)
+[![Travis](https://img.shields.io/travis/SteamerTeam/steamer-plugin-ak.svg)](https://travis-ci.org/SteamerTeam/steamer-plugin-ak)
+[![Deps](https://david-dm.org/SteamerTeam/steamer-plugin-ak.svg)](https://david-dm.org/SteamerTeam/steamer-plugin-ak)
+[![Coverage](https://img.shields.io/coveralls/SteamerTeam/steamer-plugin-ak.svg)](https://coveralls.io/github/SteamerTeam/steamer-plugin-ak)
+
 ## 安装
 
 ```javascript
@@ -179,10 +184,3 @@ npm i -g eslint
 
 npm run test
 ```
-
-## 变更
-* v1.1.0 离线包打包及 `webserver` 替换 `cdn` 的 `url`
-* v1.2.0 配置更改并修复同域js文件位置错误问题
-* v1.2.1 添加报错提示
-* v1.2.2 修复压缩包报错
-* v1.2.3 支持部份文件走离线包，部份走线上
