@@ -56,7 +56,8 @@ function AkPlugin(argv) {
 	this.config = {
 		zipFileName: "offline",   // zip folder and filename
 		src: "dist",  			  // production code source folder
-		map: []			  		  // folder and url mapping
+		map: [],		  		  // folder and url mapping
+		zipConfig: {},
 	};
 }
 
@@ -330,9 +331,7 @@ AkPlugin.prototype.zipFiles = function() {
 	let zipPath = path.resolve(this.config.zipFileName + ".zip");
 
 	var output = fs.createWriteStream(zipPath);
-	var archive = archiver('zip', {
-	    store: true // Sets the compression method to STORE.
-	});
+	var archive = archiver('zip', this.config.zipConfig);
 
 	output.on('close', () => {
 		this.utils.info('\nZip file total size: ' + Math.floor(archive.pointer() / 1024) + 'KB\n');

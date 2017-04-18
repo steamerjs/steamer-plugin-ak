@@ -78,6 +78,10 @@ module.exports = {
         // String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
         "src": "dist",
         // String, 生成环境的代码源，默认值 `dist`
+        "zipConfig": {
+            zlib: { level: 9 },
+        },  
+        // 压缩参数，详参 https://archiverjs.com
         "map": [
             {
                 "src": "webserver",

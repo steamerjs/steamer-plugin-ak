@@ -14,6 +14,7 @@ module.exports = {
                 "dest": "",
                 "url": "//s1.url.cn/h5/"
             }
-        ]
+        ],
+        "zipConfig": {}
     }
 };

@@ -3,6 +3,9 @@ module.exports = {
     "config": {
         "zipFileName": "dist/offline",
         "src": "dist",
+        "zipConfig": {
+            zlib: { level: 9 },
+        }, 
         "map": [
             {
                 "src": "webserver",
