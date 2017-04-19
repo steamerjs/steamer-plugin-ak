@@ -1,6 +1,6 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "klaw-sync": "^1.1.2",
     "lodash": "^4.17.4",
     "minimatch": "^3.0.3",
-    "steamer-pluginutils": "^1.2.4"
+    "steamer-pluginutils": "^1.2.6"
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
