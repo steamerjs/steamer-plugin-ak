@@ -8,7 +8,7 @@ AlloyKit平台生成离线包命令
 [![Coverage](https://img.shields.io/coveralls/SteamerTeam/steamer-plugin-ak.svg)](https://coveralls.io/github/SteamerTeam/steamer-plugin-ak)
 
 ## Webpack 插件
-如果是 `steamer` 系列的 `webpack` 插件，可使用 [ak-webpack-plugin](https://github.com/steamerjs/ak-webpack-plugin) 插件。
+如果是 `steamer` 系列的 `webpack` 脚手架，可使用 [ak-webpack-plugin](https://github.com/steamerjs/ak-webpack-plugin) 插件。
 
 ## 安装
 
