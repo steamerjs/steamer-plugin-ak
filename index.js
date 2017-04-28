@@ -358,5 +358,25 @@ AkPlugin.prototype.zipFiles = function() {
 
 };
 
+/* istanbul ignore next */
+/**
+ * [help]
+ */
+AkPlugin.prototype.help = function() {
+	this.utils.printUsage('ak offline package', 'ak');
+	this.utils.printOption([
+		{
+			option: "init",
+			alias: "i",
+			description: "initialize ak config"
+		},
+		{
+			option: "compress",
+			alias: "c",
+			description: "zip offline.zip"
+		}
+	]);
+};
+
 
 module.exports = AkPlugin;
