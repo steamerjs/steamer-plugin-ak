@@ -1,3 +1,6 @@
+## 1.2.8 
+	- 更新依赖
+
 ## 1.2.7
 	- 更新 steamer-pluginutils
 
