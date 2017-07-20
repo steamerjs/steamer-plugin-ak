@@ -1,3 +1,6 @@
+## 1.3.0
+	- 修复node8问题
+
 ## 1.2.7
 	- 更新 steamer-pluginutils
 
