@@ -1,3 +1,6 @@
+## 1.3.1
+	- 添加 `finishCopy` 和 `finishZip` 回调
+
 ## 1.3.0
 	- 修复node8问题
 

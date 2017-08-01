@@ -231,6 +231,11 @@ describe("resource-sameorigin", function(done) {
 
     });
 
+    after(function() {
+        fs.removeSync(path.join(PROJECT, '/sameorigin/dist/cdn/js/detail.js'));
+        fs.removeSync(path.join(PROJECT, '/sameorigin/dist/cdn/js/comment.js'));
+    });
+
     it("=> check offline folder with same origin js files", function(done) {
 
         this.timeout(10000);
@@ -254,8 +259,9 @@ describe("resource-sameorigin", function(done) {
 
         expect(h5Folder[0]).to.be('entry.html');
         expect(h5Folder[1]).to.be('index.html');
-        expect(jsFolder[0]).to.be('index.js');
-        expect(jsFolder[1]).to.be('libs');
+        expect(jsFolder[0]).to.be('detail.js');
+        expect(jsFolder[1]).to.be('index.js');
+        expect(jsFolder[2]).to.be('libs');
 
         var libs = path.join(PROJECT, '/sameorigin/dist/offline/huayang.qq.com/h5/js/libs/'),
             libsFolder = fs.readdirSync(libs);
