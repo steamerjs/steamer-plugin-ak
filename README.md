@@ -94,8 +94,20 @@ module.exports = {
                 "src": "cdn",
                 "url": "//localhost:8000/"
             }
-        ]
-        // 具体的文件目录及cdn映射
+        ],
+        // 具体的文件目录及cdn映射,
+        beforeCopy: function() {
+            // 在 拷贝文件到 offline 离线文件夹之前
+        },
+        afterCopy: function() {
+            // 在 拷贝文件到 offline 离线文件夹之后
+        },
+        beforeZip: function() {
+            // 在压缩 offline 离线文件夹之前
+        },
+        afterZip: function() {
+            // 在压缩 offline 离线文件夹之后
+        }
     }
 }
 ```
