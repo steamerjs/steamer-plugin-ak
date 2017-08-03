@@ -1,3 +1,6 @@
+## 1.4.0
+	- 升级 steamer-pluginutils
+
 ## 1.3.1
 	- 添加 `finishCopy` 和 `finishZip` 回调
 
