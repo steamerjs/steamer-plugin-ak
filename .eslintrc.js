@@ -1,21 +1,20 @@
 module.exports = {
-	"env": {
-        "browser": true,
-        "node": true,
-        "commonjs": true,
-        "es6": true
+    "env": {},
+    "extends": [
+        "eslint-config-alloy"
+    ],
+    "plugins": [],
+    "rules": {
+        "one-var": "off",
+        "strict": "off",
+        complexity: ["error", 20]
     },
-    "extends": "eslint:recommended",
-    rules: {
-        "no-extra-boolean-cast": 0,
-    	"indent": 0,
-    	"no-console": 0,
-        "no-redeclare": 1,
-        "no-unused-vars": 1,
-    	"one-var-declaration-per-line": [2, "always"],
-    	"no-mixed-spaces-and-tabs": 0,
-    	"semi": 2,
-        "no-inner-declarations": 1,
-        "no-useless-escape": 0
+    "globals": {
+        "describe": true,
+        "it": true,
+        "before": true,
+        "after": true,
+        "beforeEach": true,
+        "afterEach": true
     }
 };

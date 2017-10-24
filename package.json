@@ -1,6 +1,6 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "steamer-plugin-ak",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "codecov.io": "^0.1.6",
     "coveralls": "^2.13.1",
     "decompress": "^4.2.0",
+    "eslint-config-alloy": "^1.2.1",
     "expect.js": "^0.3.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
