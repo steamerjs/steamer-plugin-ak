@@ -16,5 +16,6 @@ module.exports = {
     	"no-mixed-spaces-and-tabs": 0,
     	"semi": 2,
         "no-inner-declarations": 1,
+        "no-useless-escape": 0
     }
 };
