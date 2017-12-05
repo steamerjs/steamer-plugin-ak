@@ -135,11 +135,12 @@ describe("not-sameorigin1", function() {
         userInput("data", "\n", 9);
         userInput("data", "\n", 10);
         userInput("data", "\n", 11);
+        userInput("data", "\n", 12);
 
         userInputEnd(function(){
             ak.startZipFile();
             done();
-        }, 12);
+        }, 13);
 
     });
 

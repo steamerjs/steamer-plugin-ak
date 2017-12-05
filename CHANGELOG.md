@@ -1,8 +1,11 @@
+## 2.0.1
+	- 更新内核 `steamer-plugin`
+
 ## 2.0.0
-	- 更新内核 steamer-plugin
+	- 更新内核 `steamer-plugin`
 
 ## 1.4.0
-	- 升级 steamer-pluginutils
+	- 升级 `steamer-pluginutils`
 
 ## 1.3.1
 	- 添加 `finishCopy` 和 `finishZip` 回调

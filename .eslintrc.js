@@ -7,6 +7,9 @@ module.exports = {
     "rules": {
         "one-var": "off",
         "strict": "off",
+        "no-extend-native": "off",
+        "no-param-reassign": "off",
+        "no-inner-declarations": "off",
         complexity: ["error", 20]
     },
     "globals": {
