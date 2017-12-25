@@ -77,14 +77,15 @@ Your destination folder(e.g., /, /, js, css):
 module.exports = {
     "plugin": "steamer-plugin-ak",
     "config": {
-        "zipFileName": "dist/offline", 
         // String, 最终生成的离线包名称，默认值是 `offline`，**当前文件夹位置以命令执行位置为基准**
-        "src": "dist",
+        "zipFileName": "dist/offline", 
         // String, 生成环境的代码源，默认值 `dist`
+        "src": "dist",
+        // 压缩参数，详参 https://archiverjs.com
         "zipConfig": {
             zlib: { level: 9 },
         },  
-        // 压缩参数，详参 https://archiverjs.com
+        // 具体的文件目录及cdn映射,
         "map": [
             {
                 "src": "webserver",
@@ -95,18 +96,23 @@ module.exports = {
                 "url": "//localhost:8000/"
             }
         ],
-        // 具体的文件目录及cdn映射,
+        // 下列回调方法，可以直接使用this.fs (fs-extra), this.success, this.info, this.warn, this.alert
+        // 在 拷贝文件到 offline 离线文件夹之前
         beforeCopy: function() {
-            // 在 拷贝文件到 offline 离线文件夹之前
+            
         },
+        // 在 拷贝文件到 offline 离线文件夹之后
         afterCopy: function() {
-            // 在 拷贝文件到 offline 离线文件夹之后
+            
         },
-        beforeZip: function() {
-            // 在压缩 offline 离线文件夹之前
+        // 在压缩 offline 离线文件夹之前
+        beforeZip: function(offlineFiles) {
+            // offlineFiles 在离线包文件夹内的文件路径信息
         },
-        afterZip: function() {
-            // 在压缩 offline 离线文件夹之后
+        // 在压缩 offline 离线文件夹之后
+        afterZip: function(zipFilePath) {
+            // zipFilePath 最终生成的离线zip包路径
+            
         }
     }
 }
@@ -125,10 +131,10 @@ module.exports = {
         "map": [
             {
                 "src": "cdn/js",
-                "dest": "js",
                 // String, 目标文件路径子文件夹，默认为空字符串
-                "isSameOrigin": true, 
+                "dest": "js",
                 // Boolean， 默认 false，如果为 true， 则会将 cdn 的 url替换成与 isWebserver 为 true 的 cdn url
+                "isSameOrigin": true, 
                 "url": "s1.url.cn/huayang/"
             },
             {
@@ -148,8 +154,8 @@ module.exports = {
             },
             {
                 "src": "webserver",
-                "isWebserver": true,
                 // Boolean， 默认为 false，如果为 true，则这将告诉插件这是 html 的主要 cdn url 
+                "isWebserver": true,
                 "url": "huayang.qq.com/huayang/activity/"
             }
         ]
