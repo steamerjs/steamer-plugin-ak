@@ -1,6 +1,6 @@
 {
   "name": "steamer-plugin-ak",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "pack files for alloykit system",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "archiver": "^2.1.0",
     "chalk": "^2.3.0",
     "fs-extra": "^4.0.2",
+    "glob": "^7.1.2",
     "inquirer": "^4.0.1",
     "klaw-sync": "^3.0.2",
     "lodash": "^4.17.4",

@@ -5,6 +5,7 @@ const klawSync = require('klaw-sync');
 const archiver = require('archiver');
 const minimatch = require('minimatch');
 const SteamerPlugin = require('steamer-plugin');
+const glob = require('glob');
 
 String.prototype.replaceAll = function (search, replacement) {
     let target = this;
@@ -61,6 +62,7 @@ class AkPlugin extends SteamerPlugin {
             map: [], // folder and url mapping
             zipConfig: {},
         };
+        this.fs = fs;
     }
 
     init() {
@@ -220,7 +222,7 @@ class AkPlugin extends SteamerPlugin {
         let beforeCopy = this.config.beforeCopy,
             afterCopy = this.config.afterCopy;
 
-        beforeCopy();
+        beforeCopy.bind(this)();
 
         let cwd = process.cwd();
 
@@ -244,7 +246,7 @@ class AkPlugin extends SteamerPlugin {
             }
         });
 
-        afterCopy();
+        afterCopy.bind(this)();
     }
 
     /**
@@ -341,6 +343,19 @@ class AkPlugin extends SteamerPlugin {
         }
     }
 
+    iterateFiles(folderPath, cb) {
+        let files = glob.sync(path.resolve(folderPath, '**/*'));
+
+        files = files.filter((item) => {
+            let fileInfo = fs.lstatSync(path.resolve(item));
+            return fileInfo.isFile();
+        });
+
+        cb && cb.bind(this)(files);
+
+        return files;
+    }
+
     /**
      * [zip files]
      */
@@ -349,7 +364,8 @@ class AkPlugin extends SteamerPlugin {
         let beforeZip = this.config.beforeZip,
             afterZip = this.config.afterZip;
 
-        beforeZip();
+        // beforeZip();
+        this.iterateFiles(this.config.zipFileName, beforeZip);
 
         let zipPath = path.resolve(this.config.zipFileName + '.zip');
 
@@ -366,7 +382,14 @@ class AkPlugin extends SteamerPlugin {
             throw err;
         });
 
-        let zipFiles = klawSync(path.resolve(this.config.zipFileName), { nodir: true });
+        let zipFile = path.resolve(this.config.zipFileName);
+
+        if (!fs.existsSync(zipFile)) {
+            this.alert(zipFile + ' does not exists');
+            return;
+        }
+
+        let zipFiles = klawSync(zipFile, { nodir: true });
 
         // archive.directory('offline/');
 
@@ -379,7 +402,7 @@ class AkPlugin extends SteamerPlugin {
 
         archive.finalize();
 
-        afterZip();
+        afterZip.bind(this)(`${zipFile}.zip`);
 
     }
 

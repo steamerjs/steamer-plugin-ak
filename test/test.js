@@ -212,7 +212,7 @@ describe("not-sameorigin1", function() {
     });
 });
 
-describe("resource-sameorigin", function(done) {
+describe.only("resource-sameorigin", function(done) {
 
     before(function() {
 
@@ -224,11 +224,20 @@ describe("resource-sameorigin", function(done) {
 
         this.timeout(10000);
 
-        var ak = new plugin({
+        let ak = new plugin({
             compress: true
         });
 
+        let infoStub = sinon.stub(ak, 'info');
+
         ak.init();
+
+        expect(infoStub.calledWith('======beforeCopy=====')).to.be(true);
+        expect(infoStub.calledWith('======afterCopy=====')).to.be(true);
+        expect(infoStub.calledWith('======beforeZip=====')).to.be(true);
+        expect(infoStub.calledWith('======afterZip=====')).to.be(true);
+        expect(infoStub.calledWith(path.resolve(ak.config.zipFileName) + '.zip')).to.be(true);
+        expect(infoStub.calledWith(ak.iterateFiles(ak.config.zipFileName))).to.be(true);
 
     });
 
