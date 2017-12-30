@@ -1,3 +1,7 @@
+## 2.0.3
+	- 新增 `minimatch` 配置
+	- 给 `beforeZip` 和 `afterZip` 添加回调参数
+
 ## 2.0.1
 	- 给回调添加参数
 

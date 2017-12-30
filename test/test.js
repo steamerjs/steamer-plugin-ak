@@ -212,7 +212,7 @@ describe("not-sameorigin1", function() {
     });
 });
 
-describe.only("resource-sameorigin", function(done) {
+describe("resource-sameorigin", function(done) {
 
     before(function() {
 

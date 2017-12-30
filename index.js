@@ -61,6 +61,10 @@ class AkPlugin extends SteamerPlugin {
             src: 'dist', // production code source folder
             map: [], // folder and url mapping
             zipConfig: {},
+            minimatchOpt: {
+                matchBase: true,
+                dot: true
+            }
         };
         this.fs = fs;
     }
@@ -163,7 +167,7 @@ class AkPlugin extends SteamerPlugin {
      * [read config]
      */
     readPluginConfig() {
-        this.config = this.readConfig();
+        this.config = this._.merge({}, this.config, this.readConfig());
         this.config.beforeCopy = this.config.beforeCopy || emptyFunc;
         this.config.afterCopy = this.config.afterCopy || emptyFunc;
         this.config.beforeZip = this.config.beforeZip || emptyFunc;
