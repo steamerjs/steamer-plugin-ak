@@ -28,7 +28,7 @@ String.prototype.replaceJsAll = function (search, replacement, extension) {
 
     if (extension === 'html') {
         target = target.replace(new RegExp('(<script[^>]*src=([\'\"]*)(.*?)([\'\"]*).*?\>(<\/script>)?)', 'gi'), function (match) {
-            if (~match.indexOf(cdnUrl)) {
+            if (match.includes(cdnUrl)) {
                 match = match.replace(cdnUrl, webserverUrl);
             }
             return match;
@@ -199,17 +199,14 @@ class AkPlugin extends SteamerPlugin {
         let hasWebserver = false,
             webServerConfig = {};
 
-        this.config.map.map((item) => {
-
+        this.config.map.forEach((item) => {
             if (item.isWebserver) {
                 hasWebserver = true;
                 webServerConfig = item;
             }
-
         });
 
-        this.config.map.map((item) => {
-
+        this.config.map.forEach((item) => {
             item.destUrl = item.url;
 
             if (hasWebserver && item.isSameOrigin) {
@@ -331,7 +328,7 @@ class AkPlugin extends SteamerPlugin {
                         return path.extname(item.path) === '.' + extname;
                     });
 
-                    files.map((item) => {
+                    files.forEach((item) => {
                         let content = fs.readFileSync(item.path, 'utf-8');
                         content = content.replaceJsAll(cdnUrl, webserverUrl, extname);
                         fs.writeFileSync(item.path, content, 'utf-8');
